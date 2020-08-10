@@ -45,7 +45,7 @@ fn main() {
 }
 
 // Solve the quadratic to determine if the ray intersects the sphere
-fn hit_sphere(center: Point3, radius: f64, ray: &Ray) -> bool {
+fn hit_sphere(center: Point3, radius: f64, ray: &Ray) -> f64 {
     let oc = ray.origin - center;
     let a = ray.direction.dot(ray.direction);
     let b = 2.0 * oc.dot(ray.direction);
@@ -53,16 +53,26 @@ fn hit_sphere(center: Point3, radius: f64, ray: &Ray) -> bool {
 
     let discriminant = b*b - 4.0*a*c;
 
-    discriminant > 0.0
+    if discriminant < 0.0 {
+        return -1.0;
+    } else {
+        return (-b - discriminant.sqrt() ) / (2.0*a)
+    }
 }
 
 // Colour sphere red, otherwise shade background in gradient
 fn ray_colour(ray: &Ray) -> Colour {
-    if hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, ray) {
-        return Colour::new(1.0, 0.0, 0.0);
+    let t = hit_sphere( Point3::new(0.0, 0.0, -1.0), 0.5, ray);
+
+    // If we hit the sphere then colour the surface
+    if t > 0.0 {
+        let Normal = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).unit_vector();
+        return Colour::new( Normal.x + 1.0, Normal.y + 1.0, Normal.z + 1.0) * 0.5;
     }
 
+    // If we dont hit the sphere then we are on the background, in which case make gradient
     let unit_direction = ray.direction.unit_vector();
+
     let t = 0.5 * (unit_direction.y + 1.0);
     
     Colour::new(1.0, 1.0, 1.0) * (1.0 -t) + Colour::new(0.5, 0.7, 1.0) * t 
