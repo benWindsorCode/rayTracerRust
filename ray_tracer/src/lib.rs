@@ -8,6 +8,7 @@ pub struct Vec3 {
     pub z: f64,
 }
 
+#[derive(Debug)]
 pub struct Colour {
     pub x: f64,
     pub y: f64,
@@ -28,7 +29,7 @@ impl Vec3 {
     }
 
     pub fn dot(self: &Self, other: Vec3) -> f64 {
-        (self.x + other.x) + (self.y + other.y) + (self.z + other.z)
+        (self.x*other.x) + (self.y*other.y) + (self.z*other.z)
     }
 
     pub fn cross(self: &Self, other: Vec3) -> Vec3 {

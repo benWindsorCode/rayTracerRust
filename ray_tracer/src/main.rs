@@ -6,7 +6,6 @@ use ray_tracer::Ray;
 use ray_tracer::Colour;
 
 fn main() {
-
     // Image
     let aspect_ratio: f64 = 16.0/9.0;
     let image_width: i32 = 400;
@@ -18,7 +17,7 @@ fn main() {
     let focal_length: f64 = 1.0;
 
     let origin = Point3::new(0.0, 0.0, 0.0);
-    let horizontal = Vec3::new(viewport_width, 0.0, 0.9);
+    let horizontal = Vec3::new(viewport_width, 0.0, 0.0);
     let vertical = Vec3::new(0.0, viewport_height, 0.0);
     let lower_left_corner = origin - horizontal/2.0 - vertical/2.0 - Vec3::new(0.0, 0.0, focal_length);
 
@@ -26,7 +25,7 @@ fn main() {
     //Render
     println!("P3\n{} {}\n255\n", image_width, image_height);
 
-    for j in (0..image_height-1).rev() {
+    for j in (0..image_height).rev() {
         eprintln!("Lines remaining: {}", j);
         std::io::stdout().flush().ok().expect("Couldn't flush stdout");
 
@@ -45,7 +44,24 @@ fn main() {
     std::io::stdout().flush().ok().expect("Couldn't flush stdout");
 }
 
+// Solve the quadratic to determine if the ray intersects the sphere
+fn hit_sphere(center: Point3, radius: f64, ray: &Ray) -> bool {
+    let oc = ray.origin - center;
+    let a = ray.direction.dot(ray.direction);
+    let b = 2.0 * oc.dot(ray.direction);
+    let c = oc.dot(oc) - radius*radius;
+
+    let discriminant = b*b - 4.0*a*c;
+
+    discriminant > 0.0
+}
+
+// Colour sphere red, otherwise shade background in gradient
 fn ray_colour(ray: &Ray) -> Colour {
+    if hit_sphere(Point3::new(0.0, 0.0, -1.0), 0.5, ray) {
+        return Colour::new(1.0, 0.0, 0.0);
+    }
+
     let unit_direction = ray.direction.unit_vector();
     let t = 0.5 * (unit_direction.y + 1.0);
     
