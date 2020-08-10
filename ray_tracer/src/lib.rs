@@ -1,14 +1,25 @@
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
 
+#[derive(Copy, Clone)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
     pub z: f64,
 }
 
+pub struct Colour {
+    pub x: f64,
+    pub y: f64,
+    pub z: f64,
+}
+
+pub struct Ray {
+    pub origin: Point3,
+    pub direction: Vec3,
+}
+
 pub type Point3 = Vec3;
-pub type Colour = Vec3;
 
 impl Vec3 {
     pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
@@ -25,6 +36,38 @@ impl Vec3 {
             y: self.z * other.x - self.x - other.z,
             z: self.x * other.y - self.y - other.x,
         }
+    }
+
+    pub fn length_squared(self: &Self) -> f64 {
+        return self.x * self.x + self.y + self.y + self.z + self.z
+    }
+
+    pub fn length(self: &Self) -> f64 {
+        return self.length_squared().sqrt()
+    }
+
+    pub fn unit_vector(self: &Self) -> Vec3 {
+       return *self / self.length() 
+    }
+}
+
+impl Colour {
+    pub fn new(x: f64, y: f64, z: f64) -> Colour {
+        Colour { x, y, z }
+    }
+
+    pub fn write_colour(self: &Self) -> () {
+        println!("{} {} {}\n", (255.999 * self.x) as i64, (255.999 * self.y) as i64, (255.999 * self.z) as i64);
+    }
+}
+
+impl Ray {
+    pub fn new(origin: Point3, direction: Vec3) -> Ray {
+        Ray { origin, direction }
+    }
+
+    pub fn at(self: &Self, t: f64) -> Point3 {
+        self.origin + self.direction*t
     }
 }
 
@@ -67,6 +110,46 @@ impl Mul<f64> for Vec3 {
 }
 
 impl Div<f64> for Vec3 {
+    type Output = Self;
+
+    fn div(self, other: f64) -> Self {
+        Self { x: (1.0/other) * self.x, y: (1.0/other) * self.y, z: (1.0/other) * self.z }
+    }
+}
+
+impl Add for Colour {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self { x: self.x + other.x, y: self.y + other.y, z: self.z + other.z }
+    }
+}
+
+impl Sub for Colour {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Self { x: self.x - other.x, y: self.y - other.y, z: self.z - other.z }
+    }
+}
+
+impl Mul<Colour> for Colour {
+    type Output = Self;
+
+    fn mul(self, other: Colour) -> Self {
+        Self { x: self.x * other.x, y: self.y * other.y, z: self.z * other.z }
+    }
+}
+
+impl Mul<f64> for Colour {
+    type Output = Self;
+
+    fn mul(self, other: f64) -> Self {
+        Self { x: self.x * other, y: self.y * other, z: self.z * other }
+    }
+}
+
+impl Div<f64> for Colour {
     type Output = Self;
 
     fn div(self, other: f64) -> Self {
