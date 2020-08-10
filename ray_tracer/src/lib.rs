@@ -1,7 +1,7 @@
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
 
-#[derive(Copy, Clone)]
+#[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
     pub x: f64,
     pub y: f64,
@@ -14,6 +14,7 @@ pub struct Colour {
     pub z: f64,
 }
 
+#[derive(Debug)]
 pub struct Ray {
     pub origin: Point3,
     pub direction: Vec3,
@@ -39,7 +40,7 @@ impl Vec3 {
     }
 
     pub fn length_squared(self: &Self) -> f64 {
-        return self.x * self.x + self.y + self.y + self.z + self.z
+        return self.x * self.x + self.y * self.y + self.z * self.z
     }
 
     pub fn length(self: &Self) -> f64 {
