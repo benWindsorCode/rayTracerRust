@@ -21,6 +21,13 @@ pub struct Ray {
     pub direction: Vec3,
 }
 
+#[derive(Debug)]
+pub struct HitRecord {
+    pub p: Point3,
+    pub normal: Vec3,
+    pub t: f64,
+}
+
 pub type Point3 = Vec3;
 
 impl Vec3 {

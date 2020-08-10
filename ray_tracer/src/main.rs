@@ -66,8 +66,8 @@ fn ray_colour(ray: &Ray) -> Colour {
 
     // If we hit the sphere then colour the surface
     if t > 0.0 {
-        let Normal = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).unit_vector();
-        return Colour::new( Normal.x + 1.0, Normal.y + 1.0, Normal.z + 1.0) * 0.5;
+        let normal = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).unit_vector();
+        return Colour::new( normal.x + 1.0, normal.y + 1.0, normal.z + 1.0) * 0.5;
     }
 
     // If we dont hit the sphere then we are on the background, in which case make gradient
