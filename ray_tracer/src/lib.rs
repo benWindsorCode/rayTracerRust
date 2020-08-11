@@ -1,3 +1,5 @@
+pub mod ray;
+
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
 
@@ -15,11 +17,6 @@ pub struct Colour {
     pub z: f64,
 }
 
-#[derive(Debug)]
-pub struct Ray {
-    pub origin: Point3,
-    pub direction: Vec3,
-}
 
 #[derive(Debug)]
 pub struct HitRecord {
@@ -67,16 +64,6 @@ impl Colour {
 
     pub fn write_colour(self: &Self) -> () {
         println!("{} {} {}\n", (255.999 * self.x) as i64, (255.999 * self.y) as i64, (255.999 * self.z) as i64);
-    }
-}
-
-impl Ray {
-    pub fn new(origin: Point3, direction: Vec3) -> Ray {
-        Ray { origin, direction }
-    }
-
-    pub fn at(self: &Self, t: f64) -> Point3 {
-        self.origin + self.direction*t
     }
 }
 
