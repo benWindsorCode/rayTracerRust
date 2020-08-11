@@ -1,7 +1,12 @@
 pub mod ray;
+pub mod colour;
+pub mod objects;
+pub mod traits;
 
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
+use ray::Ray;
+
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
@@ -11,21 +16,23 @@ pub struct Vec3 {
 }
 
 #[derive(Debug)]
-pub struct Colour {
-    pub x: f64,
-    pub y: f64,
-    pub z: f64,
-}
-
-
-#[derive(Debug)]
 pub struct HitRecord {
     pub p: Point3,
     pub normal: Vec3,
     pub t: f64,
+    pub front_face: bool
 }
 
 pub type Point3 = Vec3;
+
+impl HitRecord {
+    pub fn new(p: Point3, t: f64, ray: &Ray, outward_normal: &Vec3) -> HitRecord {
+        let front_face = ray.direction.dot(*outward_normal) < 0.0;
+        let normal = if front_face { *outward_normal } else { *outward_normal * -1.0 };
+
+        HitRecord{ p, normal, t, front_face }
+    }
+}
 
 impl Vec3 {
     pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
@@ -57,15 +64,6 @@ impl Vec3 {
     }
 }
 
-impl Colour {
-    pub fn new(x: f64, y: f64, z: f64) -> Colour {
-        Colour { x, y, z }
-    }
-
-    pub fn write_colour(self: &Self) -> () {
-        println!("{} {} {}\n", (255.999 * self.x) as i64, (255.999 * self.y) as i64, (255.999 * self.z) as i64);
-    }
-}
 
 impl fmt::Display for Vec3 {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -113,42 +111,3 @@ impl Div<f64> for Vec3 {
     }
 }
 
-impl Add for Colour {
-    type Output = Self;
-
-    fn add(self, other: Self) -> Self {
-        Self { x: self.x + other.x, y: self.y + other.y, z: self.z + other.z }
-    }
-}
-
-impl Sub for Colour {
-    type Output = Self;
-
-    fn sub(self, other: Self) -> Self {
-        Self { x: self.x - other.x, y: self.y - other.y, z: self.z - other.z }
-    }
-}
-
-impl Mul<Colour> for Colour {
-    type Output = Self;
-
-    fn mul(self, other: Colour) -> Self {
-        Self { x: self.x * other.x, y: self.y * other.y, z: self.z * other.z }
-    }
-}
-
-impl Mul<f64> for Colour {
-    type Output = Self;
-
-    fn mul(self, other: f64) -> Self {
-        Self { x: self.x * other, y: self.y * other, z: self.z * other }
-    }
-}
-
-impl Div<f64> for Colour {
-    type Output = Self;
-
-    fn div(self, other: f64) -> Self {
-        Self { x: (1.0/other) * self.x, y: (1.0/other) * self.y, z: (1.0/other) * self.z }
-    }
-}

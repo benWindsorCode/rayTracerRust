@@ -1,6 +1,6 @@
-use ray_tracer::Ray;
-use ray_tracer::HitRecord;
+use super::ray::Ray;
+use super::HitRecord;
 
-trait Hittable {
-    fn hit(ray: &Ray, t_min: f64, t_max: f64, hit_record: &HitRecord) -> bool;
+pub trait Hittable {
+    fn hit(&self, ray: &Ray, t_min: f64, t_max: f64) -> Option<HitRecord>;
 }

@@ -3,7 +3,7 @@ use std::io::Write;
 use ray_tracer::Vec3;
 use ray_tracer::Point3;
 use ray_tracer::ray::Ray;
-use ray_tracer::Colour;
+use ray_tracer::colour::Colour;
 
 fn main() {
     // Image
