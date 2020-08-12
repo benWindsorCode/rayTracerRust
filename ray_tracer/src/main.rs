@@ -4,12 +4,21 @@ use ray_tracer::Vec3;
 use ray_tracer::Point3;
 use ray_tracer::ray::Ray;
 use ray_tracer::colour::Colour;
+use ray_tracer::traits::Hittable;
+use ray_tracer::objects::sphere::Sphere;
+use ray_tracer::consts::INFINITY;
+use ray_tracer::hittable::HittableList;
 
 fn main() {
     // Image
     let aspect_ratio: f64 = 16.0/9.0;
     let image_width: i32 = 400;
     let image_height: i32 = (image_width as f64 / aspect_ratio) as i32;
+
+    // World
+    let mut world = HittableList::new();
+    world.add(Box::new(Sphere::new(Point3::new(0.0, 0.0, -1.0), 0.5)));
+    world.add(Box::new(Sphere::new(Point3::new(0.0, -100.5, -1.0), 100.0)));
 
     // Camera
     let viewport_height: f64 = 2.0;
@@ -34,9 +43,9 @@ fn main() {
             let v: f64 = j as f64 / (image_height-1) as f64;
 
             let ray = Ray::new(origin, lower_left_corner + horizontal * u + vertical * v - origin);
-            let ray_colour = ray_colour(&ray);
+            let pixel_colour = ray_colour(&ray, &world);
             
-            ray_colour.write_colour();
+            pixel_colour.write_colour();
         }
     }
 
@@ -44,36 +53,21 @@ fn main() {
     std::io::stdout().flush().ok().expect("Couldn't flush stdout");
 }
 
-// Solve the quadratic to determine if the ray intersects the sphere
-fn hit_sphere(center: Point3, radius: f64, ray: &Ray) -> f64 {
-    let oc = ray.origin - center;
-    let a = ray.direction.length_squared();
-    let half_b = oc.dot(ray.direction);
-    let c = oc.length_squared() - radius*radius;
+// Colour sphere by normal, and make gradient in background
+fn ray_colour(ray: &Ray, world: &HittableList) -> Colour {
+    let hit_record = world.hit(ray, 0.0, INFINITY);
 
-    let discriminant = half_b*half_b - a*c;
+    match hit_record {
+        Some(rec) => {
+            return (rec.normal + Colour::new(1.0, 1.0, 1.0)) * 0.5;
+        },
+        None => {
+            // If we dont hit the sphere then we are on the background, in which case make gradient
+            let unit_direction = ray.direction.unit_vector();
 
-    if discriminant < 0.0 {
-        return -1.0;
-    } else {
-        return (-half_b - discriminant.sqrt() ) / a;
+            let t = 0.5 * (unit_direction.y + 1.0);
+            
+            return Colour::new(1.0, 1.0, 1.0) * (1.0 -t) + Colour::new(0.5, 0.7, 1.0) * t 
+        }
     }
-}
-
-// Colour sphere red, otherwise shade background in gradient
-fn ray_colour(ray: &Ray) -> Colour {
-    let t = hit_sphere( Point3::new(0.0, 0.0, -1.0), 0.5, ray);
-
-    // If we hit the sphere then colour the surface
-    if t > 0.0 {
-        let normal = (ray.at(t) - Vec3::new(0.0, 0.0, -1.0)).unit_vector();
-        return Colour::new( normal.x + 1.0, normal.y + 1.0, normal.z + 1.0) * 0.5;
-    }
-
-    // If we dont hit the sphere then we are on the background, in which case make gradient
-    let unit_direction = ray.direction.unit_vector();
-
-    let t = 0.5 * (unit_direction.y + 1.0);
-    
-    Colour::new(1.0, 1.0, 1.0) * (1.0 -t) + Colour::new(0.5, 0.7, 1.0) * t 
 }

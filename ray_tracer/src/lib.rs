@@ -3,9 +3,12 @@ pub mod colour;
 pub mod objects;
 pub mod traits;
 pub mod hittable;
+pub mod utils;
+pub mod consts;
 
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
+use crate::colour::Colour;
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
@@ -58,6 +61,14 @@ impl Add for Vec3 {
 
     fn add(self, other: Self) -> Self {
         Self { x: self.x + other.x, y: self.y + other.y, z: self.z + other.z }
+    }
+}
+
+impl Add<Colour> for Vec3 {
+    type Output = Colour;
+
+    fn add(self, other: Colour) -> Colour {
+        Colour { x: self.x + other.x, y: self.y + other.y, z: self.z + other.z }
     }
 }
 
