@@ -6,10 +6,12 @@ pub mod hittable;
 pub mod utils;
 pub mod consts;
 pub mod random;
+pub mod camera;
 
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
 use crate::colour::Colour;
+use crate::random::{random_double, random_double_range};
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
@@ -47,6 +49,22 @@ impl Vec3 {
 
     pub fn unit_vector(self: &Self) -> Vec3 {
        return *self / self.length() 
+    }
+
+    pub fn random() -> Vec3 {
+        return Vec3::new(random_double(), random_double(), random_double());
+    }
+
+    pub fn random_range(min: f64, max: f64) -> Vec3 {
+        return Vec3::new(random_double_range(min, max), random_double_range(min, max), random_double_range(min, max));
+    }
+
+    pub fn random_in_unit_sphere() -> Vec3 {
+        loop {
+            let p = Vec3::random_range(-1.0, 1.0);
+            if p.length_squared() >= 1.0 { continue; }
+            return p
+        }
     }
 }
 

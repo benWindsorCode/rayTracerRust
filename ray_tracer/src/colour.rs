@@ -1,4 +1,5 @@
 use std::ops::{Add, Sub, Mul, Div};
+use super::utils::clamp;
 
 #[derive(Debug)]
 pub struct Colour {
@@ -12,8 +13,14 @@ impl Colour {
         Colour { x, y, z }
     }
 
-    pub fn write_colour(self: &Self) -> () {
-        println!("{} {} {}\n", (255.999 * self.x) as i64, (255.999 * self.y) as i64, (255.999 * self.z) as i64);
+    pub fn write_colour(self: &Self, samples_per_pixel: i64) -> () {
+        let scale = 1.0 / samples_per_pixel as f64;
+
+        let r = (self.x * scale).sqrt();
+        let g = (self.y * scale).sqrt();
+        let b = (self.z * scale).sqrt();
+        
+        println!("{} {} {}\n", (256.0 * clamp(r, 0.0, 0.999)) as i64, (256.0 * clamp(g, 0.0, 0.999)) as i64, (256.0 * clamp(b, 0.0, 0.999)) as i64);
     }
 }
 
