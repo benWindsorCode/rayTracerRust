@@ -5,6 +5,7 @@ pub mod traits;
 pub mod hittable;
 pub mod utils;
 pub mod consts;
+pub mod random;
 
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
