@@ -1,7 +1,7 @@
 use crate::Point3;
-use crate::HitRecord;
 use crate::ray::Ray;
 use crate::traits::Hittable;
+use crate::hittable::HitRecord;
 
 #[derive(Debug)]
 pub struct Sphere {

@@ -2,11 +2,10 @@ pub mod ray;
 pub mod colour;
 pub mod objects;
 pub mod traits;
+pub mod hittable;
 
 use std::fmt;
 use std::ops::{Add, Sub, Mul, Div};
-use ray::Ray;
-
 
 #[derive(Copy, Clone, Debug)]
 pub struct Vec3 {
@@ -15,24 +14,7 @@ pub struct Vec3 {
     pub z: f64,
 }
 
-#[derive(Debug)]
-pub struct HitRecord {
-    pub p: Point3,
-    pub normal: Vec3,
-    pub t: f64,
-    pub front_face: bool
-}
-
 pub type Point3 = Vec3;
-
-impl HitRecord {
-    pub fn new(p: Point3, t: f64, ray: &Ray, outward_normal: &Vec3) -> HitRecord {
-        let front_face = ray.direction.dot(*outward_normal) < 0.0;
-        let normal = if front_face { *outward_normal } else { *outward_normal * -1.0 };
-
-        HitRecord{ p, normal, t, front_face }
-    }
-}
 
 impl Vec3 {
     pub fn new(x: f64, y: f64, z: f64) -> Vec3 {
